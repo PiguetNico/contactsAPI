@@ -1,39 +1,45 @@
 package com.example.contactsAPI.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
-import com.example.contactsAPI.serializer.CustomContactSerlializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "skill")
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"hibernateLazyInitializer", "handler", "contacts"})
 public class Skill
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ApiModelProperty(hidden = true) 
+	@ApiModelProperty(hidden = true)
 	private long id;
 	@NotBlank(message = "Skill's name is mandatory")
 	private String name;
 	@PositiveOrZero
 	private int level;
 	@ApiModelProperty(hidden = true) 
-	@ManyToMany(mappedBy = "skills", fetch = FetchType.LAZY)
-	@JsonSerialize(using = CustomContactSerlializer.class)
-	private List<Contact> contacts = new ArrayList<Contact>();
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = Contact.class)
+	@JoinTable(
+			name = "contact_skill",
+			joinColumns = @JoinColumn(name = "contact_id"),
+			inverseJoinColumns = @JoinColumn(name = "skill_id")
+			)
+	private Set<Contact> contacts = new HashSet<Contact>();
 	
 	public long getId() {
 		return id;
@@ -50,10 +56,10 @@ public class Skill
 	public void setLevel(int level) {
 		this.level = level;
 	}
-	public List<Contact> getContacts() {
+	public Set<Contact> getContacts() {
 		return contacts;
 	}
-	public void setContacts(List<Contact> contacts) {
+	public void setContacts(Set<Contact> contacts) {
 		this.contacts = contacts;
 	}
 }

@@ -1,7 +1,7 @@
 package com.example.contactsAPI.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,10 +14,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-
-import com.example.contactsAPI.serializer.CustomSkillSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -28,7 +24,7 @@ public class Contact
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ApiModelProperty(hidden = true) 
+	@ApiModelProperty(hidden = true)
 	private long id;
 	@NotBlank(message = "Firstname is mandatory")
 	private String firstName;
@@ -41,17 +37,15 @@ public class Contact
 	private String email;
 	@NotBlank(message = "Password is mandatory")
 	private String password;
-	@Pattern(regexp="(^$|[0-9]{10})", message = "Your number must contains 10 digits")
 	private String phoneNumber;
 	@ApiModelProperty(hidden = true) 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, targetEntity = Skill.class)
 	@JoinTable(
 			name = "contact_skill",
 			joinColumns = @JoinColumn(name = "contact_id"),
 			inverseJoinColumns = @JoinColumn(name = "skill_id")
 			)
-	@JsonSerialize(using = CustomSkillSerializer.class)
-	private List<Skill> skills = new ArrayList<Skill>();
+	private Set<Skill> skills = new HashSet<Skill>();
 
 	public long getId() {
 		return id;
@@ -105,11 +99,11 @@ public class Contact
 		this.phoneNumber = phoneNumber;
 	}
 
-	public List<Skill> getSkills() {
+	public Set<Skill> getSkills() {
 		return skills;
 	}
 
-	public void setSkills(List<Skill> skills) {
+	public void setSkills(Set<Skill> skills) {
 		this.skills = skills;
 	}
 	

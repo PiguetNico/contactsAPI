@@ -27,7 +27,7 @@ public class ContactController
 	@Autowired
 	private ContactService contactService;
 	
-	@ApiOperation(value = "Returns all contacts")
+	@ApiOperation(value = "Returns all contacts with their skill(s)")
 	@GetMapping("/contacts")
 	public List<Contact> getAllContact()
 	{
